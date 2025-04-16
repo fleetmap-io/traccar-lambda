@@ -2,6 +2,7 @@
 <!DOCTYPE properties SYSTEM 'http://java.sun.com/dtd/properties.dtd'>
 <properties>
     <entry key='database.driver'>org.postgresql.Driver</entry>
-    <entry key='database.url'>jdbc:postgresql://localhost/mydb</entry>
     <entry key='logger.console'>true</entry>
+    <entry key='database.changelog'/>
+    <entry key='web.address'>127.0.0.1</entry>
 </properties>
