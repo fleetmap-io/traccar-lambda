@@ -1,7 +1,7 @@
 ARG ARCH=x86_64
 FROM public.ecr.aws/lambda/provided:al2023-$ARCH
 
-RUN dnf install -y gzip tar
+RUN dnf install -y gzip tar jq
 
 COPY traccar.xml /opt/traccar/conf/traccar.xml
 COPY traccar.run /opt/traccar/traccar.run
