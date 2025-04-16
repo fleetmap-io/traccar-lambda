@@ -88,36 +88,15 @@ public final class Main {
             configFile = args[args.length - 1];
         }
 
-        if (args.length > 0 && args[0].startsWith("--")) {
-            WindowsService windowsService = new WindowsService("traccar") {
-                @Override
-                public void run() {
-                    Main.run(configFile);
-                }
-            };
-            switch (args[0]) {
-                case "--install":
-                    windowsService.install("traccar", null, null, null, null, configFile);
-                    return;
-                case "--uninstall":
-                    windowsService.uninstall();
-                    return;
-                case "--service":
-                default:
-                    windowsService.init();
-                    break;
-            }
-        } else {
-            run(configFile);
-        }
+        run(configFile);
     }
 
     public static void run(String configFile) {
         try {
             injector = Guice.createInjector(new MainModule(configFile), new DatabaseModule(), new WebModule());
-            logSystemInfo();
+            // logSystemInfo();
             LOGGER.info("Version: {}", Main.class.getPackage().getImplementationVersion());
-            LOGGER.info("Starting server...");
+            LOGGER.info("Starting lambda server...");
 
             var services = new ArrayList<LifecycleObject>();
             for (var clazz : List.of(WebServer.class)) {
