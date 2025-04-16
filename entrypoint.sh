@@ -1,10 +1,7 @@
 #!/bin/bash
 
-HANDLER_NAME="$1"
-echo "Lambda handler: $HANDLER_NAME"
-
 echo "Starting Traccar..."
-#java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
+java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
 
 # Wait for Traccar to boot
 #while ! curl -s http://localhost:8082/api/server >/dev/null; do
@@ -15,5 +12,5 @@ echo "Starting Traccar..."
 echo "✅ Traccar is running."
 
 function handler () {
-  echo "function."
+  echo "function handler called"
 }
