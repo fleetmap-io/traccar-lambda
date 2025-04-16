@@ -1,19 +1,27 @@
 #!/bin/bash
-echo "$(date '+%T') 🔧 Starting Traccar..."
+echo "$(date '+%T') Starting Traccar..."
 java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
 
-sleep 9
+sleep 3
+MAX_RETRIES=10
+for i in $(seq 1 $MAX_RETRIES); do
+  if curl -sf http://localhost:8082/api/server; then
+    echo "$(date '+%T') ✅ Traccar is ready after $((i + 3)) seconds"
+    break
+  fi
+  echo "$(date '+%T') 🔁 Traccar not ready yet... retry $i"
+  sleep 1
+done
 
 while true; do
   RESPONSE=$(curl -s -i http://127.0.0.1:9001/2018-06-01/runtime/invocation/next)
   REQUEST_ID=$(echo "$RESPONSE" | grep -i Lambda-Runtime-Aws-Request-Id | awk '{print $2}' | tr -d '\r')
   EVENT_BODY=$(echo "$RESPONSE" | sed -n '/^\r$/,$p' | tail -n +2)
-  echo "event: $EVENT_BODY"
   HTTP_METHOD=$(echo "$EVENT_BODY" | jq -r '.requestContext.http.method // "GET"')
   REQUEST_PATH=$(echo "$EVENT_BODY" | jq -r '.rawPath // "/"')
   REQUEST_PAYLOAD=$(echo "$EVENT_BODY" | jq -r '.body // ""')
 
-  echo "$(date '+%T') ➡️  Forwarding $HTTP_METHOD to http://localhost:8082$REQUEST_PATH"
+  echo "$(date '+%T') ➡️  $HTTP_METHOD http://localhost:8082$REQUEST_PATH"
 
   if [ "$HTTP_METHOD" == "GET" ]; then
     TRACCAR_RESPONSE=$(curl -s -X GET "http://localhost:8082$REQUEST_PATH")
@@ -29,7 +37,6 @@ while true; do
     TRACCAR_RESPONSE='{"error":"Traccar not responding"}'
   fi
 
-  echo "$(date '+%T') ✅ Traccar response: $TRACCAR_RESPONSE"
   FINAL_RESPONSE=$(jq -n \
     --arg body "$TRACCAR_RESPONSE" \
     --argjson isBase64Encoded false \
@@ -43,8 +50,6 @@ while true; do
       body: $body,
       isBase64Encoded: $isBase64Encoded
     }')
-
-  echo "📤 Returning final response to Lambda: $FINAL_RESPONSE"
 
   curl -s -X POST \
     "http://127.0.0.1:9001/2018-06-01/runtime/invocation/$REQUEST_ID/response" \
