@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "$(date '+%T') Starting Traccar..."
-java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
+/opt/traccar/jre/bin/java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
 
 sleep 3
 MAX_RETRIES=10

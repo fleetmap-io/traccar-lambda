@@ -36,8 +36,7 @@ jobs:
           mkdir -p out/{conf,data,lib,logs,web,schema,templates}
           cp ../target/tracker-server.jar out
           cp ../target/lib/* out/lib
-          cp setup.sh out
-          cp traccar.service out
+          echo "echo 'Skipping systemd setup in Docker.'" > out/setup.sh
           tar -xf OpenJDK21U-jdk_x64_linux_hotspot_21.0.2_13.tar.gz
           jlink --module-path jdk-*/jmods --add-modules java.se,jdk.charsets,jdk.crypto.ec,jdk.unsupported --output out/jre
           rm -rf jdk-*
