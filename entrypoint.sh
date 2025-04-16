@@ -2,6 +2,8 @@
 echo "$(date '+%T') 🔧 Starting Traccar..."
 java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
 
+sleep 9
+
 while true; do
   RESPONSE=$(curl -s -i http://127.0.0.1:9001/2018-06-01/runtime/invocation/next)
   REQUEST_ID=$(echo "$RESPONSE" | grep -i Lambda-Runtime-Aws-Request-Id | awk '{print $2}' | tr -d '\r')

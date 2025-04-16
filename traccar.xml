@@ -5,4 +5,5 @@
     <entry key='logger.console'>true</entry>
     <entry key='database.changelog'/>
     <entry key='web.address'>127.0.0.1</entry>
+    <entry key="protocols.enable"/>
 </properties>
