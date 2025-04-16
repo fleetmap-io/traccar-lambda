@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      IMAGE_URI: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/traccar-lambda:latest
     steps:
 
       - uses: actions/checkout@v4
@@ -62,11 +64,11 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/traccar-lambda:latest
+          tags: ${{ env.IMAGE_URI }}
 
-      - run: |
-          aws lambda update-function-code \
-            --function-name ${{ vars.FUNCTION_NAME }} 
-            --image-uri ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/traccar-lambda:latest \ 
-            --no-cli-pager
+      - run: >
+          aws lambda update-function-code
+          --function-name ${{ vars.FUNCTION_NAME }}
+          --image-uri ${{ env.IMAGE_URI }}
+          --no-cli-pager
 
