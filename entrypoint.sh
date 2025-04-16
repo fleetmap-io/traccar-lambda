@@ -1,14 +1,6 @@
 #!/bin/bash
-set -eo pipefail
 echo "$(date '+%T') 🔧 Starting Traccar..."
 java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
-
-while ! curl -s http://localhost:8082/api/server >/dev/null; do
-  echo "$(date '+%T') ⏳ Waiting for Traccar to be ready..."
-  sleep 2
-done
-
-echo "$(date '+%T') ✅ Traccar is running."
 
 while true; do
   RESPONSE=$(curl -s -i http://127.0.0.1:9001/2018-06-01/runtime/invocation/next)
@@ -36,9 +28,8 @@ while true; do
   fi
 
   echo "$(date '+%T') ✅ Traccar response: $TRACCAR_RESPONSE"
-  ESCAPED_BODY=$(echo "$TRACCAR_RESPONSE" | jq -Rs .)
   FINAL_RESPONSE=$(jq -n \
-    --argjson body "$ESCAPED_BODY" \
+    --arg body "$TRACCAR_RESPONSE" \
     --argjson isBase64Encoded false \
     --argjson statusCode 200 \
     --arg contentType "application/json" \
