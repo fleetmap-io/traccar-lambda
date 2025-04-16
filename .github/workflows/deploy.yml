@@ -60,14 +60,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - uses: docker/build-push-action@v5
+      - name: Build and push image
+        uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/amd64
           push: true
           tags: ${{ env.IMAGE_URI }}
+          provenance: false   # ← disables BuildKit attestation metadata (required for Lambda)
+          sbom: false          # ← disables build metadata that may break Lambda
 
-      - run: >
+      - name: Update lambda
+        run: >
           aws lambda update-function-code
           --function-name ${{ vars.FUNCTION_NAME }}
           --image-uri ${{ env.IMAGE_URI }}
