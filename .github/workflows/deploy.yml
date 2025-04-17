@@ -38,7 +38,7 @@ jobs:
           mkdir -p out/{conf,data,lib,logs,web,schema,templates}
           cp ../target/tracker-server.jar out
           cp ../target/lib/* out/lib
-          echo "echo 'cp -vr * /opt/traccar'" > out/setup.sh
+          echo "cp -vr * /opt/traccar" > out/setup.sh
           chmod +x out/setup.sh
           tar -xf OpenJDK21U-jdk_x64_linux_hotspot_21.0.2_13.tar.gz
           jlink --module-path jdk-*/jmods --add-modules java.se,jdk.charsets,jdk.crypto.ec,jdk.unsupported --output out/jre
