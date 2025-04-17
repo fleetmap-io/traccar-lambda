@@ -113,22 +113,4 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 .withIsBase64Encoded(false)
                 .build();
     }
-
-    public static void main(String[] args) {
-        Handler h = new Handler();
-        APIGatewayV2HTTPEvent event = new APIGatewayV2HTTPEvent();
-        event.setRawPath("/");
-        event.setRequestContext(new APIGatewayV2HTTPEvent.RequestContext() {{
-            setHttp(new Http() {{
-                setMethod("GET");
-                setPath("/");
-            }});
-        }});
-        event.setHeaders(Map.of("User-Agent", "test"));
-
-        APIGatewayV2HTTPResponse resp = h.handleRequest(event, null);
-        System.out.println("Status: " + resp.getStatusCode());
-        System.out.println("Body: " + new String(Base64.getDecoder().decode(resp.getBody())));
-    }
-
 }
