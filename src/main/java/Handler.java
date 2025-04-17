@@ -53,7 +53,6 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         if (event.getHeaders() != null) {
             Map<String, String> headers = event.getHeaders();
-            System.out.println(headers.toString());
             for (String name : List.of("content-type", "cookie")) {
                 Optional.ofNullable(headers.get(name))
                         .ifPresent(value -> requestBuilder.header(name, value));
