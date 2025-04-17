@@ -52,13 +52,14 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         if (event.getHeaders() != null) {
             Map<String, String> headers = event.getHeaders();
+            System.out.println(headers.toString());
             for (String name : List.of("content-type", "cookie")) {
                 Optional.ofNullable(headers.get(name))
                         .ifPresent(value -> requestBuilder.header(name.substring(0, 1).toUpperCase() + name.substring(1), value));
             }
         }
 
-        final int maxRetries = 2;
+        final int maxRetries = 4;
         for (int attempt = 1; true; attempt++) {
             try {
                 HttpResponse<byte[]> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
@@ -66,14 +67,14 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             } catch (Exception e) {
                 if (attempt < maxRetries) {
                     System.out.printf("⚠️ Exception on attempt %d: %s. Retrying...\n", attempt, e.getMessage());
-                    Thread.sleep(500);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ignored) {}
                 } else {
                     return errorResponse(e.getMessage());
                 }
             }
         }
-
-        return errorResponse("Traccar not responding");
     }
 
     private static HttpRequest.BodyPublisher bodyPublisher(APIGatewayV2HTTPEvent event) {
