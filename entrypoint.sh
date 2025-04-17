@@ -32,8 +32,10 @@ while true; do
   CURL_EXIT=$?
   if [ $CURL_EXIT -ne 0 ]; then
     echo "$(date '+%T') ❌ curl to Traccar failed (exit $CURL_EXIT)"
-    TRACCAR_RESPONSE='{"error":"Traccar not responding"}'
-  fi
+      curl -s -X POST \
+        "http://127.0.0.1:9001/2018-06-01/runtime/invocation/$REQUEST_ID/response" \
+        -d "{\"statusCode\": 500, \"body\": \"Traccar failed (exit $CURL_EXIT)\"}"
+  else
 
   HEADERS=$(echo "$TRACCAR_RESPONSE" | sed '/^\r$/q')
   BODY=$(echo "$TRACCAR_RESPONSE" | sed '1,/^\r$/d')
@@ -57,6 +59,6 @@ while true; do
 
   curl -s -X POST \
     "http://127.0.0.1:9001/2018-06-01/runtime/invocation/$REQUEST_ID/response" \
-    -H "Content-Type: application/json" \
     -d "$FINAL_RESPONSE"
+  fi
 done
