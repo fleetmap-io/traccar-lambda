@@ -68,12 +68,12 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                     System.out.printf("⚠️ Exception on attempt %d: %s. Retrying...\n", attempt, e.getMessage());
                     Thread.sleep(500);
                 } else {
-                    return errorResponse(503, e.getMessage());
+                    return errorResponse(e.getMessage());
                 }
             }
         }
 
-        return errorResponse(503, "Traccar not responding");
+        return errorResponse("Traccar not responding");
     }
 
     private static HttpRequest.BodyPublisher bodyPublisher(APIGatewayV2HTTPEvent event) {
@@ -103,9 +103,9 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 .build();
     }
 
-    private static APIGatewayV2HTTPResponse errorResponse(int statusCode, String message) {
+    private static APIGatewayV2HTTPResponse errorResponse(String message) {
         return APIGatewayV2HTTPResponse.builder()
-                .withStatusCode(statusCode)
+                .withStatusCode(503)
                 .withBody(message)
                 .withHeaders(Map.of("Content-Type", "text/plain"))
                 .withIsBase64Encoded(false)
