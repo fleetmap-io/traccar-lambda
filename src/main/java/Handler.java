@@ -59,11 +59,15 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             }
         }
 
+        HttpRequest request = requestBuilder.build();
 
         final int maxRetries = 4;
         for (int attempt = 1; true; attempt++) {
             try {
-                HttpResponse<byte[]> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
+                System.out.printf("➡️ Sending %s %s\n", request.method(), request.uri());
+                request.headers().map().forEach((k, v) ->
+                        System.out.println(k + ": " + String.join(", ", v)));
+                HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
                 return toLambdaResponse(response);
             } catch (Exception e) {
                 if (attempt < maxRetries) {
