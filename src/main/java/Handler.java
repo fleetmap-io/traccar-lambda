@@ -3,8 +3,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,8 +28,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                     System.out.println("Starting Traccar...");
                     org.traccar.Main.main(new String[]{"traccar.xml"});
                 } catch (Exception e) {
-                    System.err.println("🔥 Traccar startup failed:");
-                    e.printStackTrace();
+                    System.err.printf("Traccar startup failed %s", e);
                 }
             }).start();
         }
@@ -54,22 +51,25 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 .method(method, bodyPublisher(event));
 
         if (event.getHeaders() != null) {
-            String contentType = event.getHeaders().get("content-type");
-            if (contentType != null) {
-                requestBuilder.header("Content-Type", contentType);
+            Map<String, String> headers = event.getHeaders();
+            for (String name : List.of("content-type", "cookie")) {
+                Optional.ofNullable(headers.get(name))
+                        .ifPresent(value -> requestBuilder.header(name.substring(0, 1).toUpperCase() + name.substring(1), value));
             }
         }
 
-        for (int i = 0; i < 5; i++) {
+        final int maxRetries = 2;
+        for (int attempt = 1; true; attempt++) {
             try {
                 HttpResponse<byte[]> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
                 return toLambdaResponse(response);
-            } catch (ConnectException ce) {
-                try {
+            } catch (Exception e) {
+                if (attempt < maxRetries) {
+                    System.out.printf("⚠️ Exception on attempt %d: %s. Retrying...\n", attempt, e.getMessage());
                     Thread.sleep(500);
-                } catch (InterruptedException ignored) {}
-            } catch (IOException | InterruptedException e) {
-                return errorResponse(500, "Error forwarding request: " + e.getMessage());
+                } else {
+                    return errorResponse(503, e.getMessage());
+                }
             }
         }
 
