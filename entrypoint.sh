@@ -35,9 +35,7 @@ while true; do
 
   STATUS_CODE=$(echo "$TRACCAR_RESPONSE" | head -n 1 | awk '{print $2}')
   HEADERS_JSON=$(echo "$HEADERS" | grep -E '^[A-Za-z0-9-]+:' | \
-    awk -F': ' '{printf "\"%s\":\"%s\",\n", $1, $2}' | \
-    sed '$s/,$//' | \
-    jq -s '.[0] | split("\n") | map(fromjson) | add')
+    awk -F': ' '{printf "{\"%s\":\"%s\"}\n", $1, $2}' | jq -s 'add')
 
   FINAL_RESPONSE=$(jq -n \
     --arg body "$(echo "$BODY" | jq -Rs .)" \
