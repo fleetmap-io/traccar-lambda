@@ -2,11 +2,10 @@
 echo "$(date '+%T') Starting traccar lambda v1 ..."
 /opt/traccar/jre/bin/java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
 
-sleep 3
 MAX_RETRIES=10
 for i in $(seq 1 $MAX_RETRIES); do
   if curl -sf http://localhost:8082/api/server; then
-    echo "$(date '+%T') ✅ Traccar is ready after $((i + 3)) seconds"
+    echo "$(date '+%T') ✅ Traccar is ready after $i seconds"
     break
   fi
   echo "$(date '+%T') 🔁 Traccar not ready yet... retry $i"
