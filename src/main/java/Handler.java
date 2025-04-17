@@ -10,7 +10,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpHeaders;
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 
 
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -19,22 +19,8 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             .connectTimeout(Duration.ofSeconds(2))
             .build();
 
-    private static final AtomicBoolean started = new AtomicBoolean(false);
-
     static {
-        if (started.compareAndSet(false, true)) {
-            new Thread(() -> {
-                try {
-                    System.out.println("Starting Traccar...");
-                    org.traccar.Main.main(new String[]{"traccar.xml"});
-                } catch (Exception e) {
-                    System.err.printf("Traccar startup failed %s", e);
-                }
-            }).start();
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {}
+        org.traccar.Main.run("traccar.xml");
     }
 
     @Override
@@ -108,6 +94,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
     }
 
     private static APIGatewayV2HTTPResponse errorResponse(String message) {
+        System.out.print("returning 503");
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(503)
                 .withBody(message)
