@@ -27,7 +27,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         if (started.compareAndSet(false, true)) {
             new Thread(() -> {
                 try {
-                    System.out.println("▶ Starting Traccar...");
+                    System.out.println("Starting Traccar...");
                     org.traccar.Main.main(new String[]{"traccar.xml"});
                 } catch (Exception e) {
                     System.err.println("🔥 Traccar startup failed:");
@@ -54,9 +54,10 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 .method(method, bodyPublisher(event));
 
         if (event.getHeaders() != null) {
-            event.getHeaders().forEach((k, v) -> {
-                if (v != null) requestBuilder.header(k, v);
-            });
+            String contentType = event.getHeaders().get("content-type");
+            if (contentType != null) {
+                requestBuilder.header("Content-Type", contentType);
+            }
         }
 
         for (int i = 0; i < 5; i++) {
