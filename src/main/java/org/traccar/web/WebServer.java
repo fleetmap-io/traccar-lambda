@@ -93,8 +93,6 @@ public class WebServer implements LifecycleObject {
             servletHandler.addServlet(new ServletHolder(new ConsoleServlet(config)), "/console/*");
         }
 
-        initWebApp(servletHandler);
-
         servletHandler.setErrorHandler(new ErrorHandler() {
             @Override
             protected void handleErrorPage(

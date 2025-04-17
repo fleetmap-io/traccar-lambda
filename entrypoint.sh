@@ -1,16 +1,8 @@
 #!/bin/bash
-echo "$(date '+%T') Starting traccar lambda v1 ..."
+echo "$(date '+%T') Starting traccar lambda v2 ..."
 /opt/traccar/jre/bin/java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
-
-MAX_RETRIES=10
-for i in $(seq 1 $MAX_RETRIES); do
-  if curl -sf http://localhost:8082/api/server; then
-    echo "$(date '+%T') ✅ Traccar is ready after $i seconds"
-    break
-  fi
-  echo "$(date '+%T') 🔁 Traccar not ready yet... retry $i"
-  sleep 1
-done
+sleep 3
+echo "$(date '+%T') Entering infinite while ..."
 
 while true; do
   RESPONSE=$(curl -s -i http://127.0.0.1:9001/2018-06-01/runtime/invocation/next)
