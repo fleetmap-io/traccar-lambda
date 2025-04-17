@@ -12,7 +12,7 @@ while true; do
   REQUEST_PATH=$(echo "$EVENT_BODY" | jq -r '.rawPath // "/"')
   REQUEST_PAYLOAD=$(echo "$EVENT_BODY" | jq -r '.body // ""')
 
-  echo "$(date '+%T') ➡️  $HTTP_METHOD http://localhost:8082$REQUEST_PATH"
+  echo "$(date '+%T') $EVENT_BODY ➡️  $HTTP_METHOD http://localhost:8082$REQUEST_PATH"
 
   if [ "$HTTP_METHOD" == "GET" ]; then
     TRACCAR_RESPONSE=$(curl -s -X GET "http://localhost:8082$REQUEST_PATH")
