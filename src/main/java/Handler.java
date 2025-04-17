@@ -31,7 +31,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         String path = Optional.ofNullable(event.getRawPath()).orElse("/");
         String query = Optional.ofNullable(event.getRawQueryString()).filter(q -> !q.isEmpty()).map(q -> "?" + q).orElse("");
         String fullUrl = "http://localhost:8082" + path + query;
-        System.out.println(fullUrl);
+        System.out.print(fullUrl);
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(fullUrl))
@@ -74,7 +74,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         Map<String, String> headers = new HashMap<>();
         HttpHeaders rawHeaders = response.headers();
         rawHeaders.map().forEach((k, vList) -> headers.put(k, String.join(", ", vList)));
-        System.out.printf("returning %d", response.statusCode());
+        System.out.printf("returning %d\n", response.statusCode());
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(response.statusCode())
                 .withIsBase64Encoded(true)
@@ -84,7 +84,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
     }
 
     private static APIGatewayV2HTTPResponse errorResponse(String message) {
-        System.out.print("returning 503");
+        System.out.println("returning 503");
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(503)
                 .withBody(message)
