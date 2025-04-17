@@ -32,6 +32,9 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 }
             }).start();
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {}
     }
 
     @Override
