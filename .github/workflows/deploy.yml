@@ -24,9 +24,12 @@ jobs:
           java-version: 21
           cache: gradle
 
-      - name: Build with Gradle
+      - name: Build traccar
         working-directory: traccar
         run: ./gradlew build --no-daemon -x checkstyleMain
+
+      - name: Build lambda
+        run: ./gradlew build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
