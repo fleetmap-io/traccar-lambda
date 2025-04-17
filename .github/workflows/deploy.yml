@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
-      IMAGE_URI: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/traccar-lambda:latest
+      IMAGE_URI: ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{vars.FUNCTION_NAME}}:latest
     steps:
 
       - uses: actions/checkout@v4
