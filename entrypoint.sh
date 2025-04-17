@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "$(date '+%T') Starting traccar lambda v2 ..."
 /opt/traccar/jre/bin/java -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml &
-sleep 3
+sleep 4
 echo "$(date '+%T') Entering infinite while ..."
 
 while true; do
