@@ -11,8 +11,6 @@ import java.net.http.HttpHeaders;
 import java.time.Duration;
 import java.util.*;
 
-
-
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final HttpClient httpClient = HttpClient.newBuilder()
@@ -48,21 +46,13 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             }
         }
 
-        final int maxRetries = 4;
-        for (int attempt = 1; true; attempt++) {
-            try {
-                HttpResponse<byte[]> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
-                return toLambdaResponse(response);
-            } catch (Exception e) {
-                if (attempt < maxRetries) {
-                    System.out.printf("⚠️ Exception on attempt %d: %s. Retrying...\n", attempt, e.getMessage());
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {}
-                } else {
-                    return errorResponse(e.getMessage());
-                }
-            }
+        try {
+            return toLambdaResponse(httpClient.send(requestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofByteArray()));
+        } catch (Exception e) {
+            //noinspection CallToPrintStackTrace
+            e.printStackTrace();
+            return errorResponse(e.getMessage());
         }
     }
 
