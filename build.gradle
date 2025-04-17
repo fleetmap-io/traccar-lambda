@@ -8,7 +8,7 @@ version = '1.0'
 repositories {
     mavenCentral()
     flatDir {
-        dirs '../traccar/target', '../traccar/target/lib'
+        dirs './traccar/target', './traccar/target/lib'
     }
 }
 
@@ -17,7 +17,7 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
     implementation 'org.eclipse.parsson:parsson:1.1.1'
     implementation name: 'tracker-server'
-    implementation fileTree(dir: '../traccar/target/lib', include: ['*.jar'])
+    implementation fileTree(dir: './traccar/target/lib', include: ['*.jar'])
 }
 
 application {
