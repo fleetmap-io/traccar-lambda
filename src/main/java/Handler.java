@@ -55,9 +55,10 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             System.out.println(headers.toString());
             for (String name : List.of("content-type", "cookie")) {
                 Optional.ofNullable(headers.get(name))
-                        .ifPresent(value -> requestBuilder.header(name.substring(0, 1).toUpperCase() + name.substring(1), value));
+                        .ifPresent(value -> requestBuilder.header(name, value));
             }
         }
+
 
         final int maxRetries = 4;
         for (int attempt = 1; true; attempt++) {
@@ -68,7 +69,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 if (attempt < maxRetries) {
                     System.out.printf("⚠️ Exception on attempt %d: %s. Retrying...\n", attempt, e.getMessage());
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (InterruptedException ignored) {}
                 } else {
                     return errorResponse(e.getMessage());
