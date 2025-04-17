@@ -13,12 +13,17 @@ while true; do
   REQUEST_PAYLOAD=$(echo "$EVENT_BODY" | jq -r '.body // ""')
   COOKIE_HEADER=$(echo "$EVENT_BODY" | jq -r '.headers."cookie" // empty')
 
-  echo "$(date '+%T') $EVENT_BODY ➡️  $HTTP_METHOD http://localhost:8082$REQUEST_PATH"
+  FULL_URL="http://localhost:8082$REQUEST_PATH"
+  RAW_QUERY=$(echo "$EVENT_BODY" | jq -r '.rawQueryString // ""')
+  if [ -n "$RAW_QUERY" ]; then
+    FULL_URL="$FULL_URL?$RAW_QUERY"
+  fi
+  echo "$(date '+%T') $EVENT_BODY ➡️ $HTTP_METHOD $FULL_URL"
 
   if [ "$HTTP_METHOD" == "GET" ]; then
-    TRACCAR_RESPONSE=$(curl -s -i -X GET "http://localhost:8082$REQUEST_PATH" -H "Cookie: $COOKIE_HEADER")
+    TRACCAR_RESPONSE=$(curl -s -i -X GET "$FULL_URL" -H "Cookie: $COOKIE_HEADER")
   else
-    TRACCAR_RESPONSE=$(curl -s -i -X "$HTTP_METHOD" "http://localhost:8082$REQUEST_PATH" \
+    TRACCAR_RESPONSE=$(curl -s -i -X "$HTTP_METHOD" "$FULL_URL" \
       -H "Content-Type: application/json" \
       -H "Cookie: $COOKIE_HEADER" \
       -d "$REQUEST_PAYLOAD")
