@@ -44,6 +44,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         String path = Optional.ofNullable(event.getRawPath()).orElse("/");
         String query = Optional.ofNullable(event.getRawQueryString()).filter(q -> !q.isEmpty()).map(q -> "?" + q).orElse("");
         String fullUrl = "http://localhost:8082" + path + query;
+        System.out.println(fullUrl);
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(fullUrl))
@@ -59,15 +60,10 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
             }
         }
 
-        HttpRequest request = requestBuilder.build();
-
         final int maxRetries = 4;
         for (int attempt = 1; true; attempt++) {
             try {
-                System.out.printf("➡️ Sending %s %s\n", request.method(), request.uri());
-                request.headers().map().forEach((k, v) ->
-                        System.out.println(k + ": " + String.join(", ", v)));
-                HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+                HttpResponse<byte[]> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray());
                 return toLambdaResponse(response);
             } catch (Exception e) {
                 if (attempt < maxRetries) {
