@@ -74,7 +74,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         Map<String, String> headers = new HashMap<>();
         HttpHeaders rawHeaders = response.headers();
         rawHeaders.map().forEach((k, vList) -> headers.put(k, String.join(", ", vList)));
-        System.out.printf("returning %d\n", response.statusCode());
+        System.out.printf(" returning %d\n", response.statusCode());
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(response.statusCode())
                 .withIsBase64Encoded(true)
