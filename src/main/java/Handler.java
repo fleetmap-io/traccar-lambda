@@ -34,8 +34,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         System.out.print(fullUrl);
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(URI.create(fullUrl))
-                .timeout(Duration.ofSeconds(10))
+                .uri(URI.create(fullUrl))                
                 .method(method, bodyPublisher(event));
 
         if (event.getHeaders() != null) {
