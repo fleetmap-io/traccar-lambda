@@ -34,12 +34,12 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         System.out.print(fullUrl);
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .uri(URI.create(fullUrl))                
+                .uri(URI.create(fullUrl))
                 .method(method, bodyPublisher(event));
 
         if (event.getHeaders() != null) {
             Map<String, String> headers = event.getHeaders();
-            for (String name : List.of("accept", "cookie")) {
+            for (String name : List.of("accept", "cookie", "content-type")) {
                 Optional.ofNullable(headers.get(name))
                         .ifPresent(value -> requestBuilder.header(name, value));
             }
