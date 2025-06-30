@@ -32,7 +32,6 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         String query = Optional.ofNullable(event.getRawQueryString()).filter(q -> !q.isEmpty()).map(q -> "?" + q).orElse("");
         String fullUrl = "http://localhost:8082" + path + query;
         System.out.print(fullUrl);
-        System.out.print(event.getBody());
 
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(fullUrl))
@@ -61,13 +60,15 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
                 .map(APIGatewayV2HTTPEvent.RequestContext::getHttp)
                 .map(APIGatewayV2HTTPEvent.RequestContext.Http::getMethod)
                 .orElse("GET");
-
         if (method.equalsIgnoreCase("GET")) {
             return HttpRequest.BodyPublishers.noBody();
         }
-
         String body = Optional.ofNullable(event.getBody()).orElse("");
-        return HttpRequest.BodyPublishers.ofString(body);
+        if (event.getIsBase64Encoded()) {
+            return HttpRequest.BodyPublishers.ofByteArray(Base64.getDecoder().decode(body));
+        } else {
+            return HttpRequest.BodyPublishers.ofString(body);
+        }
     }
 
     private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<byte[]> response) {
