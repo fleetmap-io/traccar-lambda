@@ -3,6 +3,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpHeaders;
 import java.time.Duration;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
@@ -71,16 +74,25 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         }
     }
 
-    private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<byte[]> response) {
+    private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<byte[]> response) throws IOException {
+        byte[] originalBody = response.body();
+
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream)) {
+            gzipStream.write(originalBody);
+        }
+        byte[] compressedBody = byteStream.toByteArray();
+
         Map<String, String> headers = new HashMap<>();
         HttpHeaders rawHeaders = response.headers();
         rawHeaders.map().forEach((k, vList) -> headers.put(k, String.join(", ", vList)));
+        headers.put("Content-Encoding", "gzip");
         System.out.printf(" returning %d\n", response.statusCode());
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(response.statusCode())
                 .withIsBase64Encoded(true)
                 .withHeaders(headers)
-                .withBody(Base64.getEncoder().encodeToString(response.body()))
+                .withBody(Base64.getEncoder().encodeToString(compressedBody))
                 .build();
     }
 
