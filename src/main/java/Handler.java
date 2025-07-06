@@ -75,6 +75,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
     }
 
     private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<byte[]> response) throws IOException {
+        System.out.printf(" received %d\n", response.statusCode());
         byte[] originalBody = response.body();
 
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
