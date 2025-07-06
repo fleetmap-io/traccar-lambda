@@ -15,7 +15,7 @@ repositories {
 dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
-    implementation 'org.eclipse.parsson:parsson:1.1.1'
+    implementation 'org.eclipse.parsson:parsson:1.1.4'
     implementation name: 'tracker-server'
     implementation fileTree(dir: './traccar/target/lib', include: ['*.jar'])
 }
