@@ -8,7 +8,6 @@
     <entry key='logger.level'>config</entry>
     <entry key='logger.queries'>true</entry>
     <entry key="protocols.enable"/>
-    <entry key="report.fastThreshold">864000</entry>
     <entry key='web.address'>127.0.0.1</entry>
     <entry key='web.path'>./traccar-web</entry>
     <entry key='web.persistSession'>true</entry>
