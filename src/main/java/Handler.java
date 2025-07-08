@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -62,7 +63,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         try {
             return toLambdaResponse(httpClient.send(requestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofByteArray()));
+                    HttpResponse.BodyHandlers.ofInputStream()));
         } catch (Exception e) {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
@@ -86,13 +87,13 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
         }
     }
 
-    private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<byte[]> response) throws IOException {
+    private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<InputStream> response) throws IOException {
         System.out.printf(" received %d\n", response.statusCode());
-        byte[] originalBody = response.body();
-
+        
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        try (GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream)) {
-            gzipStream.write(originalBody);
+        try (InputStream responseStream = response.body();
+             GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream)) {
+            responseStream.transferTo(gzipStream);
         }
         byte[] compressedBody = byteStream.toByteArray();
 
