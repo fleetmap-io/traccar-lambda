@@ -89,7 +89,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
     private static APIGatewayV2HTTPResponse toLambdaResponse(HttpResponse<InputStream> response) throws IOException {
         System.out.printf(" received %d\n", response.statusCode());
-        
+
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         try (InputStream responseStream = response.body();
              GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream)) {
@@ -103,6 +103,7 @@ public class Handler implements RequestHandler<APIGatewayV2HTTPEvent, APIGateway
 
         final int UPLOAD_THRESHOLD = 6 * 1024 * 1024; // 6MB
         if (compressedBody.length < UPLOAD_THRESHOLD) {
+            System.out.printf(" returning %d\n bytes", compressedBody.length);
             headers.put("Content-Encoding", "gzip");
             return APIGatewayV2HTTPResponse.builder()
                     .withStatusCode(response.statusCode())

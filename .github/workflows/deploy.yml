@@ -33,9 +33,6 @@ jobs:
           npm install
           npm run build
 
-      - name: Build lambda
-        run: ./gradlew build
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
