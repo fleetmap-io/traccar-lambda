@@ -28,13 +28,6 @@ This Lambda function handles responses differently based on their size:
 2. Returns the compressed data directly in the response body
 3. Sets appropriate headers (Content-Encoding: gzip)
 
-### Status Code and Redirection
-The Lambda function always returns a 302 (Found/Redirect) status code regardless of the original response status code from the Traccar server. 
-
-The response includes a `Location` header to facilitate proper HTTP redirection:
-- For responses larger than 6MB: The `Location` header points to the S3 URL where the compressed data is stored
-- For responses 6MB or smaller: The `Location` header points to the root path (`/`)
-
 ## Deployment
 
 Make sure to:
